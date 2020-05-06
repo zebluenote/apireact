@@ -2,13 +2,19 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity("email", message="Cette adresse email est déjà enregistrée")
+ * @ApiResource
  */
 class User implements UserInterface
 {
@@ -16,11 +22,15 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="L'adresse email de l'utilisateur est obligatoire")
+     * @Assert\Email(message="L'adresse email fournie n'est pas au bon format")
      */
     private $email;
 
@@ -32,16 +42,24 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Le mot de passe de l'utilisateur est obligatoire")
+     * @Assert\Length(min=8, max=60, minMessage="Le mot de passe doit faire au moins 8 caractères", maxMessage="Le mot de passe ne doit pas faire plus de 60 caractères")
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="Le prénom de l'utilisateur est obligatoire")
+     * @Assert\Length(min=2, max=60, minMessage="Le prénom doit faire au moins 2 caractères", maxMessage="Le prénom ne doit pas faire plus de 60 caractères")
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="Le nom de l'utilisateur est obligatoire")
+     * @Assert\Length(min=2, max=60, minMessage="Le nom de famille doit faire au moins 2 caractères", maxMessage="Le nom de famille ne doit pas faire plus de 60 caractères")
      */
     private $lastName;
 
