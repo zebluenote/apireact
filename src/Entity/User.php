@@ -14,7 +14,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity("email", message="Cette adresse email est déjà enregistrée")
- * @ApiResource
+ * @ApiResource(
+ *  normalizationContext={"groups"={"users_read"}}
+ * )
  */
 class User implements UserInterface
 {
@@ -22,13 +24,13 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource", "users_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource", "users_read"})
      * @Assert\NotBlank(message="L'adresse email de l'utilisateur est obligatoire")
      * @Assert\Email(message="L'adresse email fournie n'est pas au bon format")
      */
@@ -49,7 +51,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource", "users_read"})
      * @Assert\NotBlank(message="Le prénom de l'utilisateur est obligatoire")
      * @Assert\Length(min=2, max=60, minMessage="Le prénom doit faire au moins 2 caractères", maxMessage="Le prénom ne doit pas faire plus de 60 caractères")
      */
@@ -57,7 +59,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource", "users_read"})
      * @Assert\NotBlank(message="Le nom de l'utilisateur est obligatoire")
      * @Assert\Length(min=2, max=60, minMessage="Le nom de famille doit faire au moins 2 caractères", maxMessage="Le nom de famille ne doit pas faire plus de 60 caractères")
      */
