@@ -81,7 +81,6 @@ class Invoice
      *  type = "\DateTime",
      *  message = "La date renseignée doit être au format YYYY-MM-DD..."
      * )
-     * @var string A "Y-m-d H:i:s" formatted value
      */
     private $sentAt;
 
