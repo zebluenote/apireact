@@ -3,6 +3,7 @@ import axios from "axios";
 import AuthAPI from "../services/authAPI";
 import AuthContext from "../contexts/AuthContext";
 import Field from "../components/Forms/Field";
+import { toast } from "react-toastify";
 
 const LoginPage = ({history}) => {
 
@@ -27,12 +28,14 @@ const LoginPage = ({history}) => {
       await AuthAPI.authenticate(credentials);
       setError("");
       setIsAuthenticated(true);
+      toast.success("Vous êtes maintenant identifié");
       history.replace("/");
     } catch (error) {
       console.error("KO KO KO KO");
       setError(
         "Oups ! Aucun compte n'a été trouvé correspondant aux identifiants saisis"
       );
+      toast.error("Une erreur est survenue");
     }
   };
 

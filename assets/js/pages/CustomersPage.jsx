@@ -2,19 +2,23 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI.js";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import CommonLoader from "../components/Loaders/CommonLoader";
 
 const CustomersPage = (props) => {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // numéro de la page courante, default = 1
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Fonction permettant de récupérer les customers dans la bdd
   const fetchCustomers = async () => {
     try {
       const data = await CustomersAPI.findAll();
       setCustomers(data);
+      setLoading(false);
     } catch (error) {
-      console.dir(error.response);
+      toast.error("Une anomalie a empêché la récupération de vos clients");
     }
   };
 
@@ -32,8 +36,9 @@ const CustomersPage = (props) => {
     // On déclenche la requête de suppression du customer
     try {
       await CustomersAPI.delete(id);
+      toast.success("Le client a été supprimé");
     } catch (error) {
-      console.dir(error.response);
+      toast.error("Une anomalie a empêché la suppression de ce client");
       setCustomers(originalCustomers);
     }
   };
@@ -69,7 +74,9 @@ const CustomersPage = (props) => {
     <>
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <h1>Liste des clients</h1>
-        <Link to="/customers/new" className="btn btn-primary">Créer un client</Link>
+        <Link to="/customers/new" className="btn btn-primary">
+          Créer un client
+        </Link>
       </div>
 
       <div className="form-group">
@@ -94,38 +101,43 @@ const CustomersPage = (props) => {
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          {paginatedCustomers.map((customer) => (
-            <tr key={customer.id}>
-              <td>{customer.id}</td>
-              <td>
-                <a href="#">
-                  {customer.firstName} {customer.lastName}
-                </a>
-              </td>
-              <td>{customer.email}</td>
-              <td>{customer.company}</td>
-              <td className="text-center">
-                <span className="badge badge-primary">
-                  {customer.invoices.length}
-                </span>
-              </td>
-              <td className="text-center">
-                {customer.totalAmount.toLocaleString()} €
-              </td>
-              <td>
-                <button
-                  onClick={() => handleDelete(customer.id)}
-                  disabled={customer.invoices.length > 0}
-                  className="btn btn-sm btn-danger"
-                >
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+
+        {!loading && (
+          <tbody>
+            {paginatedCustomers.map((customer) => (
+              <tr key={customer.id}>
+                <td>{customer.id}</td>
+                <td>
+                  <Link to={"/customers/" + customer.id}>
+                    {customer.firstName} {customer.lastName}
+                  </Link>
+                </td>
+                <td>{customer.email}</td>
+                <td>{customer.company}</td>
+                <td className="text-center">
+                  <span className="badge badge-primary">
+                    {customer.invoices.length}
+                  </span>
+                </td>
+                <td className="text-center">
+                  {customer.totalAmount.toLocaleString()} €
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleDelete(customer.id)}
+                    disabled={customer.invoices.length > 0}
+                    className="btn btn-sm btn-danger"
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
+
+      {loading && <CommonLoader />}
 
       {itemsPerPage < filteredCustomers.length && (
         <Pagination

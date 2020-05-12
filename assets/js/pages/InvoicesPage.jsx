@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import InvoicesAPI from "../services/invoicesAPI.js";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import CommonLoader from "../components/Loaders/CommonLoader";
 
 const STATUS_CLASSES = {
   SENT: "primary",
@@ -20,13 +22,15 @@ const InvoicesPage = (props) => {
   const [invoices, setInvoices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // numéro de la page courante, default = 1
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchInvoices = async () => {
     try {
       const data = await InvoicesAPI.findAll();
       setInvoices(data);
+      setLoading(false);
     } catch (error) {
-      console.dir(error.response);
+      toast.error("Une anomalie a empêché la récupération de vos factures");
     }
   };
 
@@ -43,9 +47,10 @@ const InvoicesPage = (props) => {
     // On déclenche la requête de suppression de l'invoice
     try {
       await InvoicesAPI.delete(id);
+      toast.success("La facture a été supprimée avec succès");
     } catch (error) {
-      console.dir(error.response);
       setInvoices(originalInvoices);
+      toast.error("Une anomalie a empêché la suppression de cette facture");
     }
   };
 
@@ -110,40 +115,51 @@ const InvoicesPage = (props) => {
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          {paginatedInvoices.map((invoice) => (
-            <tr key={invoice.id}>
-              <td>{invoice.id}</td>
-              <td>{invoice.chrono}</td>
-              <td>
-                <a href="#">
-                  {invoice.customer.firstName} {invoice.customer.lastName}
-                </a>
-              </td>
-              <td className="text-center">{formatDate(invoice.sentAt)}</td>
-              <td className="text-center">
-                <span
-                  className={"badge badge-" + STATUS_CLASSES[invoice.status]}
-                >
-                  {STATUS_LABELS[invoice.status]}
-                </span>
-              </td>
-              <td className="text-center">
-                {invoice.amount.toLocaleString()} €
-              </td>
-              <td>
-                <Link to={"/invoices/" + invoice.id} className="btn btn-sm btn-primary mr-1">Editer</Link>
-                <button
-                  className="btn btn-sm btn-danger"
-                  onClick={() => handleDelete(invoice.id)}
-                >
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+
+        {!loading && (
+          <tbody>
+            {paginatedInvoices.map((invoice) => (
+              <tr key={invoice.id}>
+                <td>{invoice.id}</td>
+                <td>{invoice.chrono}</td>
+                <td>
+                  <Link to={"/customers/" + invoice.customer.id}>
+                    {invoice.customer.firstName} {invoice.customer.lastName}
+                  </Link>
+                </td>
+                <td className="text-center">{formatDate(invoice.sentAt)}</td>
+                <td className="text-center">
+                  <span
+                    className={"badge badge-" + STATUS_CLASSES[invoice.status]}
+                  >
+                    {STATUS_LABELS[invoice.status]}
+                  </span>
+                </td>
+                <td className="text-center">
+                  {invoice.amount.toLocaleString()} €
+                </td>
+                <td>
+                  <Link
+                    to={"/invoices/" + invoice.id}
+                    className="btn btn-sm btn-primary mr-1"
+                  >
+                    Editer
+                  </Link>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(invoice.id)}
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
+
+      {loading && <CommonLoader />}
+
       <Pagination
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}

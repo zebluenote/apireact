@@ -16,6 +16,7 @@ import {
 
 // any CSS you import will output into a single css file (app.css in this case)
 require("../css/app.css");
+require("react-toastify/dist/ReactToastify.css");
 
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
@@ -29,12 +30,12 @@ import PrivateRoute from "./components/PrivateRoute";
 import CustomerPage from "./pages/CustomerPage";
 import InvoicePage from "./pages/InvoicePage";
 import RegisterPage from "./pages/RegisterPage";
+import { ToastContainer, toast } from "react-toastify";
 
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
 // import $ from 'jquery';
 
 AuthAPI.setUp();
-
 
 const App = () => {
   // State permettant de savoir si l'utilisateur est actuellement identifié avec false par défaut
@@ -65,6 +66,17 @@ const App = () => {
           </Switch>
         </main>
       </HashRouter>
+      <ToastContainer
+        position={toast.POSITION.BOTTOM_CENTER}
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </AuthContext.Provider>
   );
 };
