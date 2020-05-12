@@ -1,5 +1,6 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { LOGIN_API } from "../config";
 
 let token;
 
@@ -26,7 +27,7 @@ function logout() {
  */
 function authenticate(credentials) {
   return axios
-    .post("http://127.0.0.1:8000/api/login_check", credentials)
+    .post(LOGIN_API, credentials)
     .then((response) => response.data.token)
     .then((token) => {
       // On place le Jwt dans le localStorage mais il faudrait le mettre dans un cookie Httponly

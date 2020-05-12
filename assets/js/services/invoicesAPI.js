@@ -1,26 +1,27 @@
 import axios from "axios";
+import { INVOICES_API } from "../config";
 
 function findAll() {
     return axios
-    .get("http://127.0.0.1:8000/api/invoices")
+    .get(INVOICES_API)
     .then((response) => response.data["hydra:member"]);
 }
 
 function find(id) {
     return axios
-        .get("http://127.0.0.1:8000/api/invoices/" + id)
+        .get(INVOICES_API + "/" + id)
         .then((response) => response.data);
 }
 
 function deleteInvoice(id) {
     return axios
-      .delete("http://127.0.0.1:8000/api/invoices/" + id);
+      .delete(INVOICES_API + "/" + id);
 }
 
 function create(invoice) {
     // Il faut fournir un IRI pour le customer
     return axios.post(
-        "http://127.0.0.1:8000/api/invoices",
+        INVOICES_API,
         {
           ...invoice,
           customer: `/api/customers/${invoice.customer}`,
@@ -30,7 +31,7 @@ function create(invoice) {
 
 function update(id, invoice){
     return axios.put(
-        "http://127.0.0.1:8000/api/invoices/" + id,
+        INVOICES_API + "/" + id,
         {
           ...invoice,
           customer: `/api/customers/${invoice.customer}`,
