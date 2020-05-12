@@ -1,4 +1,5 @@
-export const API_URL = "http://127.0.0.1:8000/api/";
+// La valeur de API_URL est définie dans les variables d'environnement
+export const API_URL = process.env.API_URL;
 
 export const CUSTOMERS_API = API_URL + "customers";
 export const INVOICES_API = API_URL + "invoices";
